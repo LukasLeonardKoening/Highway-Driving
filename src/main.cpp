@@ -3,15 +3,22 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
+#include <typeinfo>
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
 #include "helpers.h"
 #include "json.hpp"
+#include "vehicle.cpp"
+#include "vehicle.hpp"
+#include "trajectory_gen.cpp"
+#include "trajectory_gen.hpp"
 
 // for convenience
 using nlohmann::json;
 using std::string;
 using std::vector;
+using std::map;
 
 int main() {
   uWS::Hub h;
@@ -93,6 +100,18 @@ int main() {
           vector<double> next_x_vals;
           vector<double> next_y_vals;
 
+            int lane = (car_d-2)/4;
+            Vehicle current_state = Vehicle(lane, car_x, car_y, car_s, car_d, car_speed, car_yaw);
+            
+            // TODO: predict states of other vehicles
+            map<int, vector<Vehicle>> predictions;
+            
+            vector<Vehicle> trajectory = current_state.select_successor_state(predictions, previous_path_x, previous_path_y, end_path_s, end_path_d, {map_waypoints_x, map_waypoints_y, map_waypoints_s});
+            for (int i=0; i < trajectory.size(); i++) {
+                next_x_vals.push_back(trajectory[i].x);
+                next_y_vals.push_back(trajectory[i].y);
+            }
+            
           /**
            * TODO: define a path made up of (x,y) points that the car will visit
            *   sequentially every .02 seconds
