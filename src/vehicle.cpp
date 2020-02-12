@@ -15,6 +15,12 @@ using std::string;
 using std::vector;
 using STATE = Vehicle::STATE;
 
+// HYPERVARS
+double MAX_VELOCITY = 49.5;    // not using maximum!
+double MAX_ACC = 9.5;           // m/s^2, also not using maximum
+double REFRESH_RATE = 0.02;     // 20 ms
+double MILES_TO_METERS = 1/2.24;
+
 Vehicle::Vehicle(){}
 Vehicle::~Vehicle() {}
 
@@ -29,9 +35,13 @@ Vehicle::Vehicle(int lane, float x, float y, float s, float d, float speed, floa
     this->state = state;
 }
 
-vector<Vehicle> Vehicle::select_successor_state(map<int, vector<Vehicle>> &predictions, vector<double> previous_x, vector<double> previous_y, double previous_s, double previous_d, vector<vector<double>> map) {
+vector<Vehicle> Vehicle::select_successor_state(map<int, vector<Vehicle>> &predictions, vector<double> previous_x, vector<double> previous_y, double previous_speed, vector<vector<double>> map) {
     Trajectory_Generator gen = Trajectory_Generator(map[0], map[1], map[2]);
-    return gen.generate_keep_lane(*this, previous_x, previous_y, previous_s, previous_d);
+    
+    // TODO: Control target-velocity of car
+    
+    
+    return gen.generate_keep_lane(*this, previous_x, previous_y, previous_speed, MAX_VELOCITY);
 }
 
 vector<STATE> Vehicle::get_possible_next_states(STATE &current_state) {

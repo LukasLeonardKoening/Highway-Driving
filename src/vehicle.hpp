@@ -32,12 +32,7 @@ public:
     ~Vehicle();
     
     //Functions
-    vector<Vehicle> select_successor_state(map<int, vector<Vehicle>> &predictions,
-                                           vector<double> previous_x,
-                                           vector<double> previous_y,
-                                           double previous_s,
-                                           double previous_d,
-                                           vector<vector<double>> map);
+    vector<Vehicle> select_successor_state(map<int, vector<Vehicle>> &predictions, vector<double> previous_x, vector<double> previous_y, double previous_speed, vector<vector<double>> map);
     vector<STATE> get_possible_next_states(STATE &current_state);
     
     // static variables
