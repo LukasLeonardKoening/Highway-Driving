@@ -2,4 +2,6 @@
 .DS_Store
 
 /build
+/simulator
+/xcode
 /src/_DelSyncFiles
