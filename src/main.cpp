@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <typeinfo>
+#include <math.h>
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
 #include "helpers.h"
@@ -100,7 +101,8 @@ int main() {
           vector<double> next_x_vals;
           vector<double> next_y_vals;
 
-            int lane = (car_d-2)/4;
+            int lane = round((car_d-2.0)/4.0);
+            
             Vehicle current_state = Vehicle(lane, car_x, car_y, car_s, car_d, car_speed, car_yaw);
             
             // TODO: predict states of other vehicles
