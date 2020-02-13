@@ -21,7 +21,7 @@ using std::string;
 using std::vector;
 using std::map;
 
-double last_speed = 0;
+double last_speed = 0; // trajectorys last speed
 
 int main() {
   uWS::Hub h;
@@ -97,6 +97,8 @@ int main() {
           // Sensor Fusion Data, a list of all other cars on the same side 
           //   of the road.
           auto sensor_fusion = j[1]["sensor_fusion"];
+            
+            //std::cout << sensor_fusion << std::endl;
 
           json msgJson;
 
@@ -105,16 +107,19 @@ int main() {
 
             int lane = round((car_d-2.0)/4.0);
             
-            Vehicle current_state = Vehicle(lane, car_x, car_y, car_s, car_d, car_speed, car_yaw);
             
             
             
             // TODO: predict states of other vehicles
+            vector<vector<double>> sensor_data;
+            for (int i=0; i<sensor_fusion.size(); i++) {
+                sensor_data.push_back({sensor_fusion[i][0],sensor_fusion[i][1],sensor_fusion[i][2],sensor_fusion[i][3],sensor_fusion[i][4],sensor_fusion[i][5],sensor_fusion[i][6]});
+            }
             map<int, vector<Vehicle>> predictions;
             
             
             
-            vector<Vehicle> trajectory = current_state.select_successor_state(predictions, previous_path_x, previous_path_y, last_speed, {map_waypoints_x, map_waypoints_y, map_waypoints_s});
+            vector<Vehicle> trajectory = current_state.select_successor_state(sensor_data, previous_path_x, previous_path_y, last_speed, {map_waypoints_x, map_waypoints_y, map_waypoints_s});
             for (int i=0; i < trajectory.size(); i++) {
                 //std::cout << "x="<< trajectory[i].x << ", y=" << trajectory[i].y << std::endl;
                 next_x_vals.push_back(trajectory[i].x);

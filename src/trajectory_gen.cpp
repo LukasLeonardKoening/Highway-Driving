@@ -34,9 +34,7 @@ Trajectory_Generator::Trajectory_Generator(vector<double> map_x, vector<double> 
 }
 Trajectory_Generator::~Trajectory_Generator() {}
 
-vector<Vehicle> Trajectory_Generator::generate_keep_lane(Vehicle current, vector<double> prev_x, vector<double> prev_y, double trajec_last_speed, double target_speed) {
-    
-    current.lane = 2;
+vector<Vehicle> Trajectory_Generator::generate_trajectory(Vehicle current, vector<double> prev_x, vector<double> prev_y, double trajec_last_speed, double target_speed) {
     
     // HYPERVARS
     float SPLINE_POINT_SHIFT = 30.0;
@@ -145,7 +143,7 @@ vector<Vehicle> Trajectory_Generator::generate_keep_lane(Vehicle current, vector
         double x = ref_x + (current_x * cos(yaw) - current_y * sin(yaw));
         double y = ref_y + (current_x * sin(yaw) + current_y * cos(yaw));
 
-        trajectory.push_back(Vehicle(current.lane, x, y, 0, 0, current.speed, 0));
+        trajectory.push_back(Vehicle(current.lane, x, y, 0, 0, current.speed, 0, current.state));
     }
     
     

@@ -35,13 +35,39 @@ Vehicle::Vehicle(int lane, float x, float y, float s, float d, float speed, floa
     this->state = state;
 }
 
-vector<Vehicle> Vehicle::select_successor_state(map<int, vector<Vehicle>> &predictions, vector<double> previous_x, vector<double> previous_y, double previous_speed, vector<vector<double>> map) {
+vector<Vehicle> Vehicle::select_successor_state(vector<vector<double>> &sensor_data, vector<double> previous_x, vector<double> previous_y, double previous_speed, vector<vector<double>> map) {
     Trajectory_Generator gen = Trajectory_Generator(map[0], map[1], map[2]);
+    double target_vel = MAX_VELOCITY;
+    bool vehicle_ahead = false;
     
     // TODO: Control target-velocity of car
     
+
+    // sensorfusion data [id,x,y,vx,vy,s,d]
+    for (int i=0; i < sensor_data.size(); i++) {
+        
+        // Check for car ahead
+        vector<double> car = sensor_data[i];
+        int car_lane = round((car[6]-2.0)/4.0);
+        if (car_lane == this->lane && car[5] > this->s) {
+            double distance_to_ego = distance(this->x, this->y, car[1], car[2]);
+            double car_velocity = sqrt(car[3]*car[3] + car[4]*car[4]);
+            double security_distance = car_velocity*2;
+            if (distance_to_ego < security_distance) {
+                std::cout << "Vehicle upfront... Slow down! v=" << car_velocity/MILES_TO_METERS << std::endl;
+                target_vel = car_velocity/MILES_TO_METERS;
+                vehicle_ahead = true;
+                
+            }
+        }
+        
+        // Check if car is left or right
+        
+    }
     
-    return gen.generate_keep_lane(*this, previous_x, previous_y, previous_speed, MAX_VELOCITY);
+    
+    
+    return gen.generate_trajectory(*this, previous_x, previous_y, previous_speed, target_vel);
 }
 
 vector<STATE> Vehicle::get_possible_next_states(STATE &current_state) {

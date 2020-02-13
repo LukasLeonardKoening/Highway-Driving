@@ -22,7 +22,7 @@ public:
     ~Trajectory_Generator();
     
     // Functions
-    vector<Vehicle> generate_keep_lane(Vehicle current, vector<double> prev_x, vector<double> prev_y, double trajec_last_speed, double target_speed);
+    vector<Vehicle> generate_trajectory(Vehicle current, vector<double> prev_x, vector<double> prev_y, double trajec_last_speed, double target_speed);
     vector<double> JMT(vector<double> &start, vector<double> &end, double T);
     
 private:
