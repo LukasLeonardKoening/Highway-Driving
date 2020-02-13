@@ -21,7 +21,7 @@ using std::map;
 class Vehicle {
 public:
     enum STATE {
-        KEEP_LANE, PREP_LANE_CHANGE_LEFT, PREP_LANE_CHANGE_RIGHT, CHANGE_LANE_LEFT, CHANGE_LANE_RIGHT
+        KEEP_LANE, PREP_LANE_CHANGE, CHANGE_LANE_LEFT, CHANGE_LANE_RIGHT
     };
     
     // Constructors

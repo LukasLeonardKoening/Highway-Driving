@@ -65,6 +65,12 @@ vector<Vehicle> Vehicle::select_successor_state(vector<vector<double>> &sensor_d
         
     }
     
+    if (vehicle_ahead && this->state == KEEP_LANE) {
+        this->state = PREP_LANE_CHANGE;
+    } else if (this->state == PREP_LANE_CHANGE) {
+        // Check if lane change is possible and reasonable
+        std::cout << "Prep lane change" << std::endl;
+    }
     
     
     return gen.generate_trajectory(*this, previous_x, previous_y, previous_speed, target_vel);
@@ -75,18 +81,12 @@ vector<STATE> Vehicle::get_possible_next_states(STATE &current_state) {
     states.push_back(KEEP_LANE);
     switch (current_state) {
         case KEEP_LANE:
-            states.push_back(PREP_LANE_CHANGE_LEFT);
-            states.push_back(PREP_LANE_CHANGE_RIGHT);
+            states.push_back(PREP_LANE_CHANGE);
             break;
-        case PREP_LANE_CHANGE_RIGHT:
+        case PREP_LANE_CHANGE:
             if (this->lane != 0) {
-                states.push_back(PREP_LANE_CHANGE_RIGHT);
+                states.push_back(PREP_LANE_CHANGE);
                 states.push_back(CHANGE_LANE_RIGHT);
-            }
-            break;
-        case PREP_LANE_CHANGE_LEFT:
-            if (this->lane != num_lanes-1) {
-                states.push_back(PREP_LANE_CHANGE_LEFT);
                 states.push_back(CHANGE_LANE_LEFT);
             }
             break;
