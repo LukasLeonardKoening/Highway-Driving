@@ -37,7 +37,7 @@ Trajectory_Generator::~Trajectory_Generator() {}
 vector<Vehicle> Trajectory_Generator::generate_trajectory(Vehicle current, vector<double> prev_x, vector<double> prev_y, double trajec_last_speed, double target_speed) {
     
     // HYPERVARS
-    float SPLINE_POINT_SHIFT = 30.0;
+    float SPLINE_POINT_SHIFT = 35.0;
     double MILES_TO_METERS = 1/2.24;
     double REFRESH_RATE = 0.02;     // 20ms
     double MAX_ACC = 9.5;           // m/s^2, not using maximum

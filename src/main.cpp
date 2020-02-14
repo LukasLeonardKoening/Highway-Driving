@@ -23,6 +23,7 @@ using std::map;
 
 double last_speed = 0; // trajectorys last speed
 Vehicle::STATE last_state = Vehicle::KEEP_LANE;
+int last_lane = 1;
 
 int main() {
   uWS::Hub h;
@@ -108,7 +109,7 @@ int main() {
 
             int lane = round((car_d-2.0)/4.0);
             
-            Vehicle current_state = Vehicle(lane, car_x, car_y, car_s, car_d, car_speed, car_yaw, last_state);
+            Vehicle current_state = Vehicle(last_lane, car_x, car_y, car_s, car_d, car_speed, car_yaw, last_state);
             
             
             
@@ -129,6 +130,7 @@ int main() {
             }
             last_speed = trajectory[trajectory.size()-1].speed;
             last_state = trajectory[trajectory.size()-1].state;
+            last_lane = trajectory[trajectory.size()-1].lane;
             
           /**
            * TODO: define a path made up of (x,y) points that the car will visit
