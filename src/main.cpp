@@ -100,8 +100,6 @@ int main() {
           //   of the road.
           auto sensor_fusion = j[1]["sensor_fusion"];
             
-            //std::cout << sensor_fusion << std::endl;
-
           json msgJson;
 
           vector<double> next_x_vals;
@@ -114,28 +112,20 @@ int main() {
             
             
             // TODO: predict states of other vehicles
+            // prepare sensor data
             vector<vector<double>> sensor_data;
             for (int i=0; i<sensor_fusion.size(); i++) {
                 sensor_data.push_back({sensor_fusion[i][0],sensor_fusion[i][1],sensor_fusion[i][2],sensor_fusion[i][3],sensor_fusion[i][4],sensor_fusion[i][5],sensor_fusion[i][6]});
             }
-            map<int, vector<Vehicle>> predictions;
-            
-            
             
             vector<Vehicle> trajectory = current_state.select_successor_state(sensor_data, previous_path_x, previous_path_y, last_speed, {map_waypoints_x, map_waypoints_y, map_waypoints_s});
             for (int i=0; i < trajectory.size(); i++) {
-                //std::cout << "x="<< trajectory[i].x << ", y=" << trajectory[i].y << std::endl;
                 next_x_vals.push_back(trajectory[i].x);
                 next_y_vals.push_back(trajectory[i].y);
             }
             last_speed = trajectory[trajectory.size()-1].speed;
             last_state = trajectory[trajectory.size()-1].state;
             last_lane = trajectory[trajectory.size()-1].lane;
-            
-          /**
-           * TODO: define a path made up of (x,y) points that the car will visit
-           *   sequentially every .02 seconds
-           */
 
 
           msgJson["next_x"] = next_x_vals;

@@ -46,21 +46,12 @@ vector<Vehicle> Vehicle::select_successor_state(vector<vector<double>> &sensor_d
     bool vehicle_right = false;
     bool lane_change_complete = false;
     
-    //std::cout << "d=" << this->d << std::endl;
-    
     if ((this->d > 1.5 && this->d < 2.5 && this->lane == 0) || (this->d > 5.5 && this->d < 6.5 && this->lane == 1) || (this->d > 9.5 && this->d < 10.5 && this->lane == 2)) {
         if (state == KEEP_LANE) {
             target_vel = MAX_VELOCITY;
         }
         lane_change_complete = true;
-        std::cout << "Lane change complete" << std::endl;
     }
-    
-    
-    //vector<float> lane_velocities = {50.0, 50.0, 50.0};
-    
-    // TODO: Control target-velocity of car
-    
 
     // sensorfusion data [id,x,y,vx,vy,s,d]
     for (int i=0; i < sensor_data.size(); i++) {
@@ -69,40 +60,32 @@ vector<Vehicle> Vehicle::select_successor_state(vector<vector<double>> &sensor_d
         vector<double> car = sensor_data[i];
         int car_lane = round((car[6]-2.0)/4.0);
         double car_velocity = sqrt(car[3]*car[3] + car[4]*car[4]);
-        bool car_behind = car[5] < this->s;
         if (car_lane == this->lane && car[5] > this->s) {
             double distance_to_ego = distance(this->x, this->y, car[1], car[2]);
             double security_distance = car_velocity*2;
             if (distance_to_ego < security_distance) {
                 std::cout << "Vehicle upfront... Slow down! v=" << car_velocity/MILES_TO_METERS << std::endl;
-                //lane_velocities[car_lane] = car_velocity;
                 target_vel = car_velocity/MILES_TO_METERS;
                 vehicle_ahead = true;
-                
             }
         }
         
         // Check if car is left or right
-        if ((!car_behind && abs(car[5] - this->s) <= 35) || (car_behind && abs(car[5] - this->s) <= 10)) {
+        bool car_behind = car[5] < this->s;
+        if ((!car_behind && abs(car[5] - this->s) <= 35) || (car_behind && abs(car[5] - this->s) <= 15)) {
             if (car_lane == (this->lane - 1)) { // left
-                //lane_velocities[car_lane] = car_velocity;
                 vehicle_left = true;
-                //std::cout << "Vehicle on my left..." << std::endl;
             } else if (car_lane == (this->lane + 1)) { // right
-                //lane_velocities[car_lane] = car_velocity;
                 vehicle_right = true;
-                //std::cout << "Vehicle on my right..." << std::endl;
             }
         }
-        //std::cout << "Lane velocities: " << lane_velocities[0] << "," << lane_velocities[1] << "," << lane_velocities[2] << std::endl;
         
     }
     
     if (lane_change_complete && vehicle_ahead && this->state == KEEP_LANE) {
         this->state = PREP_LANE_CHANGE;
     } else if (this->state == PREP_LANE_CHANGE) {
-        // Check if lane change is possible and reasonable
-        //std::cout << "Prep lane change" << std::endl;
+        // Check if lane change is possible
         int lane_left = this->lane - 1;
         int lane_right = this->lane + 1;
         
@@ -127,31 +110,5 @@ vector<Vehicle> Vehicle::select_successor_state(vector<vector<double>> &sensor_d
         this->lane += 1;
     }
     
-    std::cout << "Target lane: " << this->lane << std::endl;
-    
-    
-    return gen.generate_trajectory(*this, previous_x, previous_y, previous_speed, target_vel);
-}
-
-vector<STATE> Vehicle::get_possible_next_states(STATE &current_state) {
-    vector<STATE> states;
-    states.push_back(KEEP_LANE);
-    switch (current_state) {
-        case KEEP_LANE:
-            states.push_back(PREP_LANE_CHANGE);
-            break;
-        case PREP_LANE_CHANGE:
-            if (this->lane != 0) {
-                states.push_back(PREP_LANE_CHANGE);
-                states.push_back(CHANGE_LANE_RIGHT);
-                states.push_back(CHANGE_LANE_LEFT);
-            }
-            break;
-        case CHANGE_LANE_LEFT:
-            break;
-        case CHANGE_LANE_RIGHT:
-            break;
-    }
-    return states;
     return gen.generate(*this, previous_x, previous_y, previous_speed, target_vel);
 }

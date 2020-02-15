@@ -33,10 +33,6 @@ public:
     
     //Functions
     vector<Vehicle> select_successor_state(vector<vector<double>> &sensor_data, vector<double> previous_x, vector<double> previous_y, double previous_speed, vector<vector<double>> map);
-    vector<STATE> get_possible_next_states(STATE &current_state);
-    
-    // static variables
-    int num_lanes = 3;
     
     // vehicle variables
     int lane;
@@ -47,10 +43,6 @@ public:
     float speed;
     float yaw;
     STATE state;
-    
-    
-private:
-    //private variables
     
 };
 

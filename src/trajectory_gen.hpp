@@ -23,7 +23,6 @@ public:
     
     // Functions
     vector<Vehicle> generate(Vehicle current, vector<double> prev_x, vector<double> prev_y, double trajec_last_speed, double target_speed);
-    vector<double> JMT(vector<double> &start, vector<double> &end, double T);
     
 private:
     vector<double> mappoints_x;
