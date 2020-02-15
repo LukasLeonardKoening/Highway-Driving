@@ -89,12 +89,22 @@ vector<Vehicle> Vehicle::select_successor_state(vector<vector<double>> &sensor_d
         int lane_left = this->lane - 1;
         int lane_right = this->lane + 1;
         
-        if (lane_left >= 0 && !vehicle_left && speed < 39.1) { //&& lane_velocities[lane_left] == 0.0) {
-            std::cout << "Change left" << std::endl;
-            this->state = CHANGE_LANE_LEFT;
-        } else if (lane_right < 3 && !vehicle_right && speed < 39.1) {//} && lane_velocities[lane_right] == 0.0) {
-            std::cout << "Change right" << std::endl;
-            this->state = CHANGE_LANE_RIGHT;
+        if (lane_left >= 0 && !vehicle_left) {
+            // Check if velocity is low enough
+            if (speed < 39.1) {
+                std::cout << "Change left" << std::endl;
+                this->state = CHANGE_LANE_LEFT;
+            } else {
+                target_vel = 39;
+            }
+        } else if (lane_right < 3 && !vehicle_right) {
+            // Check if velocity is low enough
+            if (speed < 39.1) {
+                std::cout << "Change right" << std::endl;
+                this->state = CHANGE_LANE_RIGHT;
+            } else {
+                target_vel = 39;
+            }
         }
     } else if (this->state == CHANGE_LANE_LEFT) {
         // Last safety check, if there is no vehicle...
