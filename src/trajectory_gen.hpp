@@ -18,11 +18,11 @@ using std::vector;
 class Trajectory_Generator {
 public:
     // Con- / Destructor
-    Trajectory_Generator(vector<double> map_x, vector<double> map_y, vector<double> map_s);
+    Trajectory_Generator(vector<double> &map_x, vector<double> &map_y, vector<double> &map_s);
     ~Trajectory_Generator();
     
     // Functions
-    vector<Vehicle> generate(Vehicle current, vector<double> prev_x, vector<double> prev_y, double trajec_last_speed, double target_speed);
+    vector<Vehicle> generate(Vehicle current, vector<double> &prev_x, vector<double> &prev_y, double trajec_last_speed, double target_speed);
     
 private:
     vector<double> mappoints_x;

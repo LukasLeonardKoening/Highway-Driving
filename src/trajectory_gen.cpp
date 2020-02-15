@@ -18,14 +18,14 @@ using std::vector;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
-Trajectory_Generator::Trajectory_Generator(vector<double> map_x, vector<double> map_y, vector<double> map_s) {
+Trajectory_Generator::Trajectory_Generator(vector<double> &map_x, vector<double> &map_y, vector<double> &map_s) {
     this->mappoints_x = map_x;
     this->mappoints_y = map_y;
     this->mappoints_s = map_s;
 }
 Trajectory_Generator::~Trajectory_Generator() {}
 
-vector<Vehicle> Trajectory_Generator::generate(Vehicle current, vector<double> prev_x, vector<double> prev_y, double trajec_last_speed, double target_speed) {
+vector<Vehicle> Trajectory_Generator::generate(Vehicle current, vector<double> &prev_x, vector<double> &prev_y, double trajec_last_speed, double target_speed) {
     
     // HYPERVARS
     float SPLINE_POINT_SHIFT = 35.0;
@@ -79,10 +79,10 @@ vector<Vehicle> Trajectory_Generator::generate(Vehicle current, vector<double> p
     }
     
 
-    // Add 3 extra points
-    vector<double> point1 = getXY(current.s + SPLINE_POINT_SHIFT, lane_d, this->mappoints_s, this->mappoints_x, this->mappoints_y);
-    vector<double> point2 = getXY(current.s + 2*SPLINE_POINT_SHIFT, lane_d, this->mappoints_s, this->mappoints_x, this->mappoints_y);
-    vector<double> point3 = getXY(current.s + 3*SPLINE_POINT_SHIFT, lane_d, this->mappoints_s, this->mappoints_x, this->mappoints_y);
+    // Add 3 extra points to spline
+    vector<double> point1 = getXY(current.s + SPLINE_POINT_SHIFT, lane_d, mappoints_s, mappoints_x, mappoints_y);
+    vector<double> point2 = getXY(current.s + 2*SPLINE_POINT_SHIFT, lane_d, mappoints_s, mappoints_x, mappoints_y);
+    vector<double> point3 = getXY(current.s + 3*SPLINE_POINT_SHIFT, lane_d, mappoints_s, mappoints_x, mappoints_y);
 
     spline_x_points.push_back(point1[0]);
     spline_x_points.push_back(point2[0]);
