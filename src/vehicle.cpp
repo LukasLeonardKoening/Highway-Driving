@@ -40,7 +40,7 @@ Vehicle::Vehicle(int lane, float x, float y, float s, float d, float speed, floa
 
 vector<Vehicle> Vehicle::select_successor_state(vector<vector<double>> &sensor_data, vector<double> previous_x, vector<double> previous_y, double previous_speed, vector<vector<double>> map) {
     Trajectory_Generator gen = Trajectory_Generator(map[0], map[1], map[2]);
-    double target_vel = MAX_VELOCITY;
+    double target_vel = 39;
     bool vehicle_ahead = false;
     bool vehicle_left = false;
     bool vehicle_right = false;
@@ -48,13 +48,16 @@ vector<Vehicle> Vehicle::select_successor_state(vector<vector<double>> &sensor_d
     
     //std::cout << "d=" << this->d << std::endl;
     
-    if ((this->d > 1.8 && this->d < 2.2) || (this->d > 5.8 && this->d < 6.2) || (this->d > 9.8 && this->d < 10.2)) {
+    if ((this->d > 1.5 && this->d < 2.5 && this->lane == 0) || (this->d > 5.5 && this->d < 6.5 && this->lane == 1) || (this->d > 9.5 && this->d < 10.5 && this->lane == 2)) {
+        if (state == KEEP_LANE) {
+            target_vel = MAX_VELOCITY;
+        }
         lane_change_complete = true;
         std::cout << "Lane change complete" << std::endl;
     }
     
     
-    //vector<float> lane_velocities = {0.0, 0.0, 0.0};
+    //vector<float> lane_velocities = {50.0, 50.0, 50.0};
     
     // TODO: Control target-velocity of car
     
@@ -80,7 +83,7 @@ vector<Vehicle> Vehicle::select_successor_state(vector<vector<double>> &sensor_d
         }
         
         // Check if car is left or right
-        if ((!car_behind && abs(car[5] - this->s) <= 35) || (car_behind && abs(car[5] - this->s) <= 15)) {
+        if ((!car_behind && abs(car[5] - this->s) <= 35) || (car_behind && abs(car[5] - this->s) <= 10)) {
             if (car_lane == (this->lane - 1)) { // left
                 //lane_velocities[car_lane] = car_velocity;
                 vehicle_left = true;
@@ -103,23 +106,25 @@ vector<Vehicle> Vehicle::select_successor_state(vector<vector<double>> &sensor_d
         int lane_left = this->lane - 1;
         int lane_right = this->lane + 1;
         
-        if (lane_left >= 0 && !vehicle_left) { //&& lane_velocities[lane_left] == 0.0) {
+        if (lane_left >= 0 && !vehicle_left && speed < 39.1) { //&& lane_velocities[lane_left] == 0.0) {
             std::cout << "Change left" << std::endl;
             this->state = CHANGE_LANE_LEFT;
-        } else if (lane_right < 3 && !vehicle_right) {//} && lane_velocities[lane_right] == 0.0) {
+        } else if (lane_right < 3 && !vehicle_right && speed < 39.1) {//} && lane_velocities[lane_right] == 0.0) {
             std::cout << "Change right" << std::endl;
             this->state = CHANGE_LANE_RIGHT;
         }
     } else if (this->state == CHANGE_LANE_LEFT) {
-            this->state = KEEP_LANE;
-            this->lane -= 1;
         
         //this->state = KEEP_LANE;
+        target_vel = 40;
+        this->state = KEEP_LANE;
+        this->lane -= 1;
     } else if (this->state == CHANGE_LANE_RIGHT) {
-            this->state = KEEP_LANE;
-            this->lane += 1;
         
         //this->state = KEEP_LANE;
+        target_vel = 40;
+        this->state = KEEP_LANE;
+        this->lane += 1;
     }
     
     std::cout << "Target lane: " << this->lane << std::endl;
@@ -148,4 +153,5 @@ vector<STATE> Vehicle::get_possible_next_states(STATE &current_state) {
             break;
     }
     return states;
+    return gen.generate(*this, previous_x, previous_y, previous_speed, target_vel);
 }

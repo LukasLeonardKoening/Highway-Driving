@@ -34,7 +34,7 @@ Trajectory_Generator::Trajectory_Generator(vector<double> map_x, vector<double> 
 }
 Trajectory_Generator::~Trajectory_Generator() {}
 
-vector<Vehicle> Trajectory_Generator::generate_trajectory(Vehicle current, vector<double> prev_x, vector<double> prev_y, double trajec_last_speed, double target_speed) {
+vector<Vehicle> Trajectory_Generator::generate(Vehicle current, vector<double> prev_x, vector<double> prev_y, double trajec_last_speed, double target_speed) {
     
     // HYPERVARS
     float SPLINE_POINT_SHIFT = 35.0;
@@ -127,10 +127,12 @@ vector<Vehicle> Trajectory_Generator::generate_trajectory(Vehicle current, vecto
 
     for (int i=0; i < (50-path_size); i++) {
         // Handle speed
-        double vel_inc = REFRESH_RATE*MAX_ACC / MILES_TO_METERS;
+        
         if (current.speed < target_speed) {
+            double vel_inc = REFRESH_RATE * 0.5 * MAX_ACC / MILES_TO_METERS;
             current.speed = current.speed + vel_inc;
         } else if (current.speed > target_speed) {
+            double vel_inc = REFRESH_RATE*MAX_ACC / MILES_TO_METERS;
             current.speed = current.speed - vel_inc;
         }
         
@@ -246,8 +248,6 @@ vector<Vehicle> Trajectory_Generator::generate_trajectory(Vehicle current, vecto
     
     return trajectory;
 }
-
-
 
 vector<double> Trajectory_Generator::JMT(vector<double> &start, vector<double> &end, double T) {
   /**
