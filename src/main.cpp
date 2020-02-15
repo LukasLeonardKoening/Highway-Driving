@@ -104,29 +104,33 @@ int main() {
 
           vector<double> next_x_vals;
           vector<double> next_y_vals;
+            
+            // *** IMPLEMENTATION ***
 
+            // calculate current lane
             int lane = round((car_d-2.0)/4.0);
             
+            // init current state
             Vehicle current_state = Vehicle(last_lane, car_x, car_y, car_s, car_d, car_speed, car_yaw, last_state);
             
-            
-            
-            // TODO: predict states of other vehicles
             // prepare sensor data
             vector<vector<double>> sensor_data;
             for (int i=0; i<sensor_fusion.size(); i++) {
                 sensor_data.push_back({sensor_fusion[i][0],sensor_fusion[i][1],sensor_fusion[i][2],sensor_fusion[i][3],sensor_fusion[i][4],sensor_fusion[i][5],sensor_fusion[i][6]});
             }
             
+            // create trajectory and push it into the given vectors
             vector<Vehicle> trajectory = current_state.select_successor_state(sensor_data, previous_path_x, previous_path_y, last_speed, {map_waypoints_x, map_waypoints_y, map_waypoints_s});
             for (int i=0; i < trajectory.size(); i++) {
                 next_x_vals.push_back(trajectory[i].x);
                 next_y_vals.push_back(trajectory[i].y);
             }
+            // save last speed and lane of trajectory and state of vehicle's state maschine
             last_speed = trajectory[trajectory.size()-1].speed;
             last_state = trajectory[trajectory.size()-1].state;
             last_lane = trajectory[trajectory.size()-1].lane;
 
+            // *** END IMPLEMENTATION ***
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;

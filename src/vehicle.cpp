@@ -39,6 +39,20 @@ Vehicle::Vehicle(int lane, float x, float y, float s, float d, float speed, floa
 }
 
 vector<Vehicle> Vehicle::select_successor_state(vector<vector<double>> &sensor_data, vector<double> previous_x, vector<double> previous_y, double previous_speed, vector<vector<double>> map) {
+    /**
+     * Function decides what the next behavior of the vehicle is
+     * INPUT:
+     *  @param sensor_data: Sensor data from car
+     *  @param previous_x:      X points from last trajectory
+     *  @param previous_y:      Y points from last trajectory
+     *  @param previous_speed:  double value of last speed of trajectory
+     *  @param map:             vector of map point vectors (in following order: x,y,s)
+     *
+     * OUTPUT
+     *  vector of vehicle states representing trajectory points
+     */
+    
+    // Variables
     Trajectory_Generator gen = Trajectory_Generator(map[0], map[1], map[2]);
     double target_vel = 39;
     bool vehicle_ahead = false;
@@ -46,6 +60,7 @@ vector<Vehicle> Vehicle::select_successor_state(vector<vector<double>> &sensor_d
     bool vehicle_right = false;
     bool lane_change_complete = false;
     
+    // Check if previous lane change has been completed and maximal velocity is possible again
     if ((this->d > 1.5 && this->d < 2.5 && this->lane == 0) || (this->d > 5.5 && this->d < 6.5 && this->lane == 1) || (this->d > 9.5 && this->d < 10.5 && this->lane == 2)) {
         if (state == KEEP_LANE) {
             target_vel = MAX_VELOCITY;
@@ -53,6 +68,7 @@ vector<Vehicle> Vehicle::select_successor_state(vector<vector<double>> &sensor_d
         lane_change_complete = true;
     }
 
+    // Check all cars from sensor data for possible obstacles
     // sensorfusion data [id,x,y,vx,vy,s,d]
     for (int i=0; i < sensor_data.size(); i++) {
         
@@ -71,6 +87,7 @@ vector<Vehicle> Vehicle::select_successor_state(vector<vector<double>> &sensor_d
         }
         
         // Check if car is left or right
+        // Using a smaller distance for vehicles behind the ego vehicle, because the ego vehicle is going to speed up after lane changing
         bool car_behind = car[5] < this->s;
         if ((!car_behind && abs(car[5] - this->s) <= 35) || (car_behind && abs(car[5] - this->s) <= 15)) {
             if (car_lane == (this->lane - 1)) { // left
@@ -83,6 +100,7 @@ vector<Vehicle> Vehicle::select_successor_state(vector<vector<double>> &sensor_d
     }
     
     if (lane_change_complete && vehicle_ahead && this->state == KEEP_LANE) {
+        // lane change is necessary
         this->state = PREP_LANE_CHANGE;
     } else if (this->state == PREP_LANE_CHANGE) {
         // Check if lane change is possible

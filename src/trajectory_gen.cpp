@@ -26,13 +26,26 @@ Trajectory_Generator::Trajectory_Generator(vector<double> &map_x, vector<double>
 Trajectory_Generator::~Trajectory_Generator() {}
 
 vector<Vehicle> Trajectory_Generator::generate(Vehicle current, vector<double> &prev_x, vector<double> &prev_y, double trajec_last_speed, double target_speed) {
+    /**
+     * Function generates trajectory for
+     * INPUT:
+     *  @param current:                        Current state of car
+     *  @param prev_x:                          X points from last trajectory
+     *  @param prev_y:                          Y points from last trajectory
+     *  @param trajec_last_speed:  double value of last speed of trajectory
+     *  @param target_speed:             double value of speed, that is desired
+     *
+     * OUTPUT
+     *  vector of vehicle states representing trajectory points
+    */
     
-    // HYPERVARS
+    // HYPERVARIABLES
     float SPLINE_POINT_SHIFT = 35.0;
     double MILES_TO_METERS = 1/2.24;
     double REFRESH_RATE = 0.02;     // 20ms
     double MAX_ACC = 9.5;           // m/s^2, not using maximum
     
+    // variables
     vector<Vehicle> trajectory;
     vector<double> spline_x_points, spline_y_points;
     double ref_x, ref_y;
@@ -40,7 +53,9 @@ vector<Vehicle> Trajectory_Generator::generate(Vehicle current, vector<double> &
     double yaw = current.yaw;
     double lane_d = 4*current.lane + 2;
 
+    // Use current position or old trajectory as starting point for new trajectory
     if (path_size < 2) {
+        // Use current position and predicted last location for spline
         double previous_x = current.x - cos(yaw);
         double previous_y = current.y - sin(yaw);
 
@@ -50,9 +65,11 @@ vector<Vehicle> Trajectory_Generator::generate(Vehicle current, vector<double> &
         spline_y_points.push_back(previous_y);
         spline_y_points.push_back(current.y);
 
+        // set reference points for cordinate transformation
         ref_x = current.x;
         ref_y = current.y;
     } else {
+        // Use the last two points of old trajectory for spline
         double old_x, prev_old_x, old_y, prev_old_y;
         old_x = prev_x[path_size-1];
         prev_old_x = prev_x[path_size-2];
