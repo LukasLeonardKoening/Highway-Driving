@@ -97,17 +97,19 @@ vector<Vehicle> Vehicle::select_successor_state(vector<vector<double>> &sensor_d
             this->state = CHANGE_LANE_RIGHT;
         }
     } else if (this->state == CHANGE_LANE_LEFT) {
-        
-        //this->state = KEEP_LANE;
-        target_vel = 40;
+        // Last safety check, if there is no vehicle...
+        if (!vehicle_left) {
+            this->lane -= 1;
+            target_vel = 40;
+        }
         this->state = KEEP_LANE;
-        this->lane -= 1;
     } else if (this->state == CHANGE_LANE_RIGHT) {
-        
-        //this->state = KEEP_LANE;
-        target_vel = 40;
+        // Last safety check, if there is no vehicle...
+        if (!vehicle_right) {
+            this->lane += 1;
+            target_vel = 40;
+        }
         this->state = KEEP_LANE;
-        this->lane += 1;
     }
     
     return gen.generate(*this, previous_x, previous_y, previous_speed, target_vel);
